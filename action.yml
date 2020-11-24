@@ -16,6 +16,10 @@ inputs:
   OUTPUT_PATH:
     description: 'Set output file where variables are write'
     required: false
+  OUTPUT_FORMAT:
+    description: 'Set output file format (available values: "raw", "dotenv")'
+    required: false
+    default: 'raw'
 runs:
   using: 'node12'
   main: 'dist/index.js'

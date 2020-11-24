@@ -3,6 +3,7 @@ const aws = require('aws-sdk')
 const fs = require('fs')
 
 const outputPath = core.getInput('OUTPUT_PATH')
+const outputFormat = core.getInput('OUTPUT_FORMAT')
 const secretName = core.getInput('SECRET_NAME')
 const secretsManager = new aws.SecretsManager({
   accessKeyId: core.getInput('AWS_ACCESS_KEY_ID'),
@@ -24,7 +25,12 @@ getSecretValue(secretsManager, secretName).then(resp => {
       core.exportVariable(key, value)
     })
     if (outputPath) {
-      fs.writeFileSync(outputPath, secret)
+      if (outputFormat === 'raw') {
+        fs.writeFileSync(outputPath, secret)
+      } else if (outputFormat === 'dotenv') {
+        const secretsAsEnv = Object.entries(parsedSecret).map(([key, value]) => `${key}=${value}`).join('\n')
+        fs.writeFileSync(outputPath, secretsAsEnv)
+      }
     }
   } else {
     core.warning(`${secretName} has no secret values`)
